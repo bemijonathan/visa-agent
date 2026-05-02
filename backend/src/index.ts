@@ -1,7 +1,8 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
-import { serveStatic } from 'hono/bun'
+import { serveStatic } from '@hono/node-server/serve-static'
+import { serve } from '@hono/node-server'
 import { rateLimiter } from 'hono-rate-limiter'
 import { agentRoutes } from './routes/agent.js'
 import { profileRoutes } from './routes/profiles.js'
@@ -124,7 +125,7 @@ app.route('/api/organizations', organizationRoutes)
 app.use('/public/*', serveStatic({ root: './' }))
 
 // Dashboard SPA — serve static assets then fall back to index.html for client-side routing
-app.use('/dashboard/*', serveStatic({ root: './', rewriteRequestPath: (path) => path.replace(/^\/dashboard/, '/public/dashboard') }))
+app.use('/dashboard/*', serveStatic({ root: './public/dashboard', rewriteRequestPath: (path) => path.replace(/^\/dashboard/, '') }))
 app.get('/dashboard/*', serveStatic({ path: './public/dashboard/index.html' }))
 
 // Error handler
@@ -133,14 +134,15 @@ app.onError((err, c) => {
   return c.json({ error: 'Internal server error' }, 500)
 })
 
-const port = process.env.PORT || 3000
+const port = Number(process.env.PORT) || 3000
 
 console.log(`Starting server on port ${port}...`)
 console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
 console.log(`Database URL configured: ${process.env.DATABASE_URL ? 'Yes' : 'No'}`)
 
-export default {
-  port,
+serve({
   fetch: app.fetch,
-  idleTimeout: 255,
-}
+  port,
+})
+
+console.log(`Server running on port ${port}`)

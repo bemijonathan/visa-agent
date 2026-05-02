@@ -5,8 +5,7 @@ nixPkgs = ["bun", "nodejs_20"]
 [phases.install]
 cmds = [
     "cd dashboard && bun install",
-    "cd backend && bun install",
-    "cd backend && npm install tsx"
+    "cd backend && bun install"
 ]
 
 [phases.build]
