@@ -65,6 +65,10 @@ app.onError((err, c) => {
 
 const port = process.env.PORT || 3000
 
+console.log(`Starting server on port ${port}...`)
+console.log(`Environment: ${process.env.NODE_ENV || 'development'}`)
+console.log(`Database URL configured: ${process.env.DATABASE_URL ? 'Yes' : 'No'}`)
+
 export default {
   port,
   fetch: app.fetch,
