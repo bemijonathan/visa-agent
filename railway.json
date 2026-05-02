@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "cd backend && bunx prisma db push --accept-data-loss && bun run dist/index.js",
+    "startCommand": "cd backend && bunx prisma db push --accept-data-loss && bun run src/index.ts",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 30,
     "restartPolicyType": "ON_FAILURE",
