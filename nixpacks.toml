@@ -1,11 +1,12 @@
 # Railway build config - builds dashboard then backend
 [phases.setup]
-nixPkgs = ["bun"]
+nixPkgs = ["bun", "nodejs_20"]
 
 [phases.install]
 cmds = [
     "cd dashboard && bun install",
-    "cd backend && bun install"
+    "cd backend && bun install",
+    "cd backend && npm install tsx"
 ]
 
 [phases.build]
@@ -15,4 +16,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd backend && bunx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && bun run src/index.ts"
+cmd = "cd backend && npx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && npx tsx src/index.ts"
