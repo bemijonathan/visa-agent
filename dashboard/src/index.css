@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-canvas text-ink antialiased;
+  }
+}
+
+@layer components {
+  /* Notion-style primary button (purple) */
+  .btn-notion {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-notion-purple text-white text-sm font-medium rounded-md hover:bg-notion-purple-pressed focus:outline-none focus:ring-2 focus:ring-notion-purple focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Notion-style dark button */
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-ink-deep text-white text-sm font-medium rounded-md hover:bg-charcoal focus:outline-none focus:ring-2 focus:ring-ink-deep focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Notion-style secondary button (outlined) */
+  .btn-outlined {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-transparent text-ink text-sm font-medium rounded-md border border-hairline-strong hover:bg-surface focus:outline-none focus:ring-2 focus:ring-notion-purple focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Button on dark backgrounds */
+  .btn-on-dark {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-ink text-sm font-medium rounded-md hover:bg-surface focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-notion-navy transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 bg-transparent text-ink text-sm font-medium rounded-sm hover:bg-surface focus:outline-none transition-colors;
+  }
+
+  /* Legacy buttons (keep for existing components) */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 text-sm font-medium rounded-lg border border-red-200 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+  }
+
+  /* Notion-style cards */
+  .card-notion {
+    @apply bg-canvas rounded-lg border border-hairline;
+  }
+
+  .card-feature {
+    @apply bg-canvas rounded-lg border border-hairline p-8;
+  }
+
+  .input {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+  }
+
+  /* Notion-style input */
+  .input-notion {
+    @apply block w-full px-4 py-2.5 bg-canvas border border-hairline-strong rounded-md text-base focus:outline-none focus:ring-2 focus:ring-notion-purple focus:border-transparent transition-colors;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  /* Notion badges */
+  .badge-purple {
+    @apply inline-flex items-center px-2.5 py-1 bg-notion-purple text-white text-xs font-semibold rounded-full;
+  }
+
+  .badge-pill {
+    @apply inline-flex items-center px-3 py-1 bg-surface text-charcoal text-xs font-medium rounded-full;
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "visa-agent-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "start": "bun dist/index.js",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@prisma/client": "^6.2.0",
+    "@qdrant/js-client-rest": "^1.13.0",
+    "cloudinary": "^2.5.1",
+    "firebase-admin": "^12.6.0",
+    "groq-sdk": "^1.1.2",
+    "hono": "^4.6.0",
+    "hono-rate-limiter": "^0.5.3",
+    "pdfkit": "^0.18.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pdfkit": "^0.17.5",
+    "prisma": "^6.2.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

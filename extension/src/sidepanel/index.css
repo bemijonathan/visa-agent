@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 400px;
+  height: 600px;
+  background: #0a0a0a;
+  color: white;
+  overflow: hidden;
+}
+
+#root {
+  width: 400px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dark theme scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Textarea placeholder */
+textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Select dropdown styling for dark theme */
+select option {
+  background: #141414;
+  color: white;
+}

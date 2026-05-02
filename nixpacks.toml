@@ -1,0 +1,19 @@
+# Railway build config - builds dashboard then backend
+[phases.setup]
+nixPkgs = ["bun"]
+
+[phases.install]
+cmds = [
+    "cd dashboard && bun install",
+    "cd backend && bun install"
+]
+
+[phases.build]
+cmds = [
+    "cd dashboard && bun run build",
+    "cd backend && bunx prisma generate",
+    "cd backend && bun run build"
+]
+
+[start]
+cmd = "cd backend && bunx prisma db push --accept-data-loss && bun run dist/index.js"

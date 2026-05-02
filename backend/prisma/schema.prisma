@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String               @id @default(cuid())
+  firebaseUid       String               @unique
+  email             String               @unique
+  displayName       String?
+  photoURL          String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  activities        Activity[]
+  uploadedDocuments Document[]
+  memberships       OrganizationMember[]
+}
+
+model Organization {
+  id        String               @id @default(cuid())
+  name      String
+  slug      String               @unique
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  documents Document[]
+  members   OrganizationMember[]
+  profiles  Profile[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  userId         String
+  organizationId String
+  role           MemberRole   @default(MEMBER)
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
+model Profile {
+  id             String       @id @default(cuid())
+  organizationId String
+  name           String
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  address        String?
+  city           String?
+  country        String?
+  dateOfBirth    String?
+  email          String?
+  employer       String?
+  nationality    String?
+  occupation     String?
+  passportExpiry String?
+  passportNumber String?
+  phone          String?
+  documents      Document[]
+  letters        Letter[]
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+model Document {
+  id             String       @id @default(cuid())
+  organizationId String
+  uploadedById   String
+  profileId      String?
+  type           String
+  name           String
+  fileId         String
+  fileUrl        String
+  extractedText  String?
+  vectorIds      String[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  profile        Profile?     @relation(fields: [profileId], references: [id])
+  uploadedBy     User         @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([profileId])
+  @@index([uploadedById])
+}
+
+model Letter {
+  id           String       @id @default(cuid())
+  profileId    String
+  content      String
+  metadata     Json?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  status       LetterStatus @default(DRAFT)
+  name         String       @default("Untitled Letter")
+  instructions String?
+  profile      Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@index([status])
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum MemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum LetterStatus {
+  DRAFT
+  APPROVED
+  REJECTED
+}

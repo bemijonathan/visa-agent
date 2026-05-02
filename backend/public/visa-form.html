@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visitor Visa Application Form</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      padding: 2rem 1rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header img {
+      height: 60px;
+      margin-bottom: 0.75rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a365d;
+    }
+
+    .page-header p {
+      font-size: 0.875rem;
+      color: #718096;
+      margin-top: 0.25rem;
+    }
+
+    .form-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2d3748;
+      border-bottom: 2px solid #ebf4ff;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title .badge {
+      background: #3182ce;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .field label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    .field label .required {
+      color: #e53e3e;
+      margin-left: 2px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      padding: 0.5rem 0.65rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 5px;
+      font-size: 0.875rem;
+      color: #1a202c;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: #3182ce;
+      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .field input[type="file"] {
+      padding: 0.4rem;
+      background: #f7fafc;
+      border: 2px dashed #cbd5e0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .field input[type="file"]:hover {
+      border-color: #3182ce;
+      background: #ebf8ff;
+    }
+
+    .field input[type="file"]:focus {
+      outline: none;
+      border-color: #3182ce;
+      box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: #a0aec0;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.2rem;
+    }
+
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #2d3748;
+      cursor: pointer;
+    }
+
+    .checkbox-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .checkbox-list label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #2d3748;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 5px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #cbd5e0;
+      color: #4a5568;
+    }
+
+    .btn-outline:hover { background: #f7fafc; }
+
+    .btn-primary {
+      background: #2b6cb0;
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: #2c5282; }
+
+    .notice {
+      background: #ebf8ff;
+      border: 1px solid #bee3f8;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+      color: #2c5282;
+      margin-bottom: 1.5rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-wrapper">
+
+  <div class="page-header">
+    <h1>Visitor Visa Application</h1>
+    <p>Form VAF-2024 &mdash; Please complete all required fields in English</p>
+  </div>
+
+  <div class="notice">
+    This is a sample form for testing the Visa Agent auto-fill feature. All fields are
+    representative of a real visa application.
+  </div>
+
+  <form id="visa-application-form" novalidate>
+
+    <!-- Section 1: Personal Information -->
+    <div class="card">
+      <div class="card-title">
+        Personal Information
+        <span class="badge">SECTION 1</span>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="last_name">Family / Last Name <span class="required">*</span></label>
+          <input type="text" id="last_name" name="last_name" placeholder="As on passport" autocomplete="family-name" />
+        </div>
+        <div class="field">
+          <label for="first_name">Given / First Name <span class="required">*</span></label>
+          <input type="text" id="first_name" name="first_name" placeholder="As on passport" autocomplete="given-name" />
+        </div>
+        <div class="field">
+          <label for="middle_name">Middle Name(s)</label>
+          <input type="text" id="middle_name" name="middle_name" placeholder="If applicable" autocomplete="additional-name" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="date_of_birth">Date of Birth <span class="required">*</span></label>
+          <input type="date" id="date_of_birth" name="date_of_birth" autocomplete="bday" />
+        </div>
+        <div class="field">
+          <label for="place_of_birth">Place of Birth <span class="required">*</span></label>
+          <input type="text" id="place_of_birth" name="place_of_birth" placeholder="City, Country" />
+        </div>
+        <div class="field">
+          <label for="nationality">Nationality <span class="required">*</span></label>
+          <input type="text" id="nationality" name="nationality" placeholder="e.g. British" autocomplete="country-name" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label>Gender <span class="required">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="gender" value="male" /> Male</label>
+            <label><input type="radio" name="gender" value="female" /> Female</label>
+            <label><input type="radio" name="gender" value="other" /> Other</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Marital Status <span class="required">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="marital_status" value="single" /> Single</label>
+            <label><input type="radio" name="marital_status" value="married" /> Married</label>
+            <label><input type="radio" name="marital_status" value="divorced" /> Divorced</label>
+            <label><input type="radio" name="marital_status" value="widowed" /> Widowed</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Passport Details -->
+    <div class="card">
+      <div class="card-title">
+        Travel Document / Passport
+        <span class="badge">SECTION 2</span>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="field">
+          <label for="passport_number">Passport Number <span class="required">*</span></label>
+          <input type="text" id="passport_number" name="passport_number" placeholder="e.g. AB1234567" />
+        </div>
+        <div class="field">
+          <label for="passport_issue_date">Date of Issue <span class="required">*</span></label>
+          <input type="date" id="passport_issue_date" name="passport_issue_date" />
+        </div>
+        <div class="field">
+          <label for="passport_expiry_date">Date of Expiry <span class="required">*</span></label>
+          <input type="date" id="passport_expiry_date" name="passport_expiry_date" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="passport_issuing_country">Issuing Country <span class="required">*</span></label>
+          <input type="text" id="passport_issuing_country" name="passport_issuing_country" placeholder="e.g. United Kingdom" />
+        </div>
+        <div class="field">
+          <label for="passport_issuing_authority">Issuing Authority</label>
+          <input type="text" id="passport_issuing_authority" name="passport_issuing_authority" placeholder="e.g. Her Majesty's Passport Office" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Contact & Address -->
+    <div class="card">
+      <div class="card-title">
+        Contact &amp; Home Address
+        <span class="badge">SECTION 3</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number <span class="required">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="+44 7700 900000" autocomplete="tel" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="address_line1">Address Line 1 <span class="required">*</span></label>
+          <input type="text" id="address_line1" name="address_line1" placeholder="Street address" autocomplete="address-line1" />
+        </div>
+        <div class="field">
+          <label for="address_line2">Address Line 2</label>
+          <input type="text" id="address_line2" name="address_line2" placeholder="Apartment, suite, etc." autocomplete="address-line2" />
+        </div>
+        <div class="field">
+          <label for="city">City <span class="required">*</span></label>
+          <input type="text" id="city" name="city" autocomplete="address-level2" />
+        </div>
+        <div class="field">
+          <label for="state_province">State / Province / County</label>
+          <input type="text" id="state_province" name="state_province" autocomplete="address-level1" />
+        </div>
+        <div class="field">
+          <label for="postal_code">Postal / ZIP Code <span class="required">*</span></label>
+          <input type="text" id="postal_code" name="postal_code" autocomplete="postal-code" />
+        </div>
+        <div class="field">
+          <label for="country_of_residence">Country of Residence <span class="required">*</span></label>
+          <input type="text" id="country_of_residence" name="country_of_residence" autocomplete="country-name" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Employment -->
+    <div class="card">
+      <div class="card-title">
+        Employment &amp; Occupation
+        <span class="badge">SECTION 4</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="occupation">Current Occupation <span class="required">*</span></label>
+          <select id="occupation" name="occupation">
+            <option value="">— Select —</option>
+            <option value="employed">Employed (private sector)</option>
+            <option value="employed_public">Employed (public sector)</option>
+            <option value="self_employed">Self-employed / Freelance</option>
+            <option value="student">Student</option>
+            <option value="retired">Retired</option>
+            <option value="unemployed">Unemployed</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="job_title">Job Title / Position</label>
+          <input type="text" id="job_title" name="job_title" placeholder="e.g. Software Engineer" />
+        </div>
+        <div class="field">
+          <label for="employer_name">Employer / School Name</label>
+          <input type="text" id="employer_name" name="employer_name" placeholder="Company or institution" />
+        </div>
+        <div class="field">
+          <label for="employer_address">Employer Address</label>
+          <input type="text" id="employer_address" name="employer_address" placeholder="City, Country" />
+        </div>
+        <div class="field">
+          <label for="annual_income">Annual Income (approx.)</label>
+          <input type="text" id="annual_income" name="annual_income" placeholder="e.g. £45,000" />
+        </div>
+        <div class="field">
+          <label for="employer_phone">Employer Phone</label>
+          <input type="tel" id="employer_phone" name="employer_phone" placeholder="+44 20 7946 0000" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Travel Details -->
+    <div class="card">
+      <div class="card-title">
+        Intended Travel Details
+        <span class="badge">SECTION 5</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="destination_country">Destination Country <span class="required">*</span></label>
+          <input type="text" id="destination_country" name="destination_country" placeholder="e.g. United States" />
+        </div>
+        <div class="field">
+          <label for="visa_type">Visa Type <span class="required">*</span></label>
+          <select id="visa_type" name="visa_type">
+            <option value="">— Select —</option>
+            <option value="tourist">Tourist / Visitor (B-2)</option>
+            <option value="business">Business (B-1)</option>
+            <option value="transit">Transit</option>
+            <option value="student">Student (F-1)</option>
+            <option value="work">Work</option>
+            <option value="family">Family Visit</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="arrival_date">Intended Arrival Date <span class="required">*</span></label>
+          <input type="date" id="arrival_date" name="arrival_date" />
+        </div>
+        <div class="field">
+          <label for="departure_date">Intended Departure Date <span class="required">*</span></label>
+          <input type="date" id="departure_date" name="departure_date" />
+        </div>
+        <div class="field">
+          <label for="port_of_entry">Port of Entry</label>
+          <input type="text" id="port_of_entry" name="port_of_entry" placeholder="e.g. JFK International Airport" />
+        </div>
+        <div class="field">
+          <label for="accommodation">Accommodation Address <span class="required">*</span></label>
+          <input type="text" id="accommodation" name="accommodation" placeholder="Hotel name or host address" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label for="purpose_of_visit">Purpose of Visit <span class="required">*</span></label>
+        <textarea id="purpose_of_visit" name="purpose_of_visit" placeholder="Briefly describe the reason for your visit…"></textarea>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label>Previous Visits to This Country</label>
+        <div class="radio-group">
+          <label><input type="radio" name="previous_visits" value="no" /> No</label>
+          <label><input type="radio" name="previous_visits" value="yes" /> Yes</label>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 0.75rem;">
+        <label for="previous_visit_dates">If yes, provide dates of previous visits</label>
+        <input type="text" id="previous_visit_dates" name="previous_visit_dates" placeholder="e.g. March 2019, July 2022" />
+      </div>
+    </div>
+
+    <!-- Section 6: Financial -->
+    <div class="card">
+      <div class="card-title">
+        Financial Information
+        <span class="badge">SECTION 6</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="funds_available">Funds Available for Trip <span class="required">*</span></label>
+          <input type="text" id="funds_available" name="funds_available" placeholder="e.g. $5,000" />
+        </div>
+        <div class="field">
+          <label for="trip_sponsor">Who is funding this trip? <span class="required">*</span></label>
+          <select id="trip_sponsor" name="trip_sponsor">
+            <option value="">— Select —</option>
+            <option value="self">Self</option>
+            <option value="employer">Employer</option>
+            <option value="family">Family member</option>
+            <option value="sponsor">Third-party sponsor</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="field">
+        <label>Supporting documents enclosed</label>
+        <div class="checkbox-list">
+          <label><input type="checkbox" name="docs_bank_statements" value="yes" /> Bank statements (3 months)</label>
+          <label><input type="checkbox" name="docs_employment_letter" value="yes" /> Employment / sponsorship letter</label>
+          <label><input type="checkbox" name="docs_flight_booking" value="yes" /> Flight booking confirmation</label>
+          <label><input type="checkbox" name="docs_hotel_booking" value="yes" /> Hotel / accommodation booking</label>
+          <label><input type="checkbox" name="docs_travel_insurance" value="yes" /> Travel insurance policy</label>
+          <label><input type="checkbox" name="docs_invitation_letter" value="yes" /> Invitation letter from host</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 7: Document Uploads -->
+    <div class="card">
+      <div class="card-title">
+        Supporting Documents
+        <span class="badge">SECTION 7</span>
+      </div>
+
+      <p class="hint" style="margin-bottom: 1rem;">Upload required supporting documents in PDF, JPG, or PNG format (max 10MB each).</p>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="passport_copy">Passport Bio Page <span class="required">*</span></label>
+          <input type="file" id="passport_copy" name="passport_copy" accept=".pdf,.jpg,.jpeg,.png" />
+          <span class="hint">Clear scan of passport information page</span>
+        </div>
+        <div class="field">
+          <label for="photo_upload">Passport Photo <span class="required">*</span></label>
+          <input type="file" id="photo_upload" name="photo_upload" accept=".jpg,.jpeg,.png" />
+          <span class="hint">Recent passport-size photo (35mm x 45mm)</span>
+        </div>
+        <div class="field">
+          <label for="bank_statement">Bank Statement</label>
+          <input type="file" id="bank_statement" name="bank_statement" accept=".pdf,.jpg,.jpeg,.png" />
+          <span class="hint">Last 3 months bank statement</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 8: Declaration -->
+    <div class="card">
+      <div class="card-title">
+        Declaration
+        <span class="badge">SECTION 8</span>
+      </div>
+
+      <div class="field" style="margin-bottom: 1rem;">
+        <label><input type="checkbox" name="declaration_accurate" id="declaration_accurate" value="yes" required />
+          &nbsp;I declare that the information given in this application is true, complete and
+          correct to the best of my knowledge. <span class="required">*</span></label>
+        <span class="hint" style="margin-top: 0.3rem;">Providing false or misleading information is a criminal offence.</span>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="field">
+          <label for="signature_name">Full Name (as signature) <span class="required">*</span></label>
+          <input type="text" id="signature_name" name="signature_name" placeholder="Type your full legal name" />
+        </div>
+        <div class="field">
+          <label for="application_date">Date <span class="required">*</span></label>
+          <input type="date" id="application_date" name="application_date" />
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="form-actions">
+        <button type="reset" class="btn btn-outline">Clear Form</button>
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // Set today's date on the application date field
+  document.getElementById('application_date').value = new Date().toISOString().split('T')[0];
+
+  document.getElementById('visa-application-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    alert('Form submitted (test mode).\n\nSee console for field values.');
+    console.log('Visa form data:', data);
+  });
+</script>
+
+</body>
+</html>
