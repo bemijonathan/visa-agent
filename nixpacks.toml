@@ -5,14 +5,14 @@ nixPkgs = ["bun"]
 [phases.install]
 cmds = [
     "cd dashboard && bun install",
-    "cd backend && bun install",
-    "cd backend && bunx prisma generate"
+    "cd backend && bun install"
 ]
 
 [phases.build]
 cmds = [
+    "cd backend && bunx prisma generate",
     "cd dashboard && bun run build"
 ]
 
 [start]
-cmd = "cd backend && bunx prisma generate && bunx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && bun run src/index.ts"
+cmd = "cd backend && bunx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && bun run src/index.ts"
