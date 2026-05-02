@@ -5,13 +5,13 @@ nixPkgs = ["bun"]
 [phases.install]
 cmds = [
     "cd dashboard && bun install",
-    "cd backend && bun install"
+    "cd backend && bun install",
+    "cd backend && bunx prisma generate"
 ]
 
 [phases.build]
 cmds = [
     "cd dashboard && bun run build",
-    "cd backend && bunx prisma generate",
     "cd backend && bun run build"
 ]
 
