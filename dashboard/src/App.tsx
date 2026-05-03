@@ -10,6 +10,7 @@ import ClientDetail from './pages/ClientDetail'
 import HomePage from './pages/HomePage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
+import ContactPage from './pages/ContactPage'
 import OrgSettings from './pages/OrgSettings'
 import NewOrganization from './pages/NewOrganization'
 import LetterEditor from './pages/LetterEditor'
@@ -237,6 +238,9 @@ export default function App() {
 
       {/* Terms of service (public) */}
       <Route path="/terms" element={<TermsPage />} />
+
+      {/* Contact page (public) */}
+      <Route path="/contact" element={<ContactPage />} />
 
       {/* Protected routes */}
       <Route path="/app" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />
