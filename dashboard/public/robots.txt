@@ -1,0 +1,9 @@
+# Robots.txt for Visa Agent
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://visa-agent-production.up.railway.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1

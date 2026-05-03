@@ -1,0 +1,68 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0a0a"/>
+      <stop offset="1" stop-color="#1a1a2e"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="400" y1="100" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f59e0b" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#f59e0b" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Glow effect -->
+  <ellipse cx="600" cy="315" rx="500" ry="300" fill="url(#glow)"/>
+
+  <!-- Logo -->
+  <rect x="80" y="80" width="64" height="64" rx="16" fill="url(#amber)"/>
+  <circle cx="112" cy="112" r="18" stroke="#0a0a0a" stroke-width="3" fill="none"/>
+  <path d="M104 112 L112 104 L120 112 L112 120 Z" fill="#0a0a0a"/>
+
+  <!-- Brand name -->
+  <text x="160" y="125" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="600" fill="white">Visa Agent</text>
+
+  <!-- Main headline -->
+  <text x="80" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="white">Auto-Fill Visa Forms</text>
+  <text x="80" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="700" fill="#f59e0b">with AI</text>
+
+  <!-- Subheadline -->
+  <text x="80" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255,255,255,0.6)">For immigration consultants and visa specialists</text>
+
+  <!-- Features -->
+  <g fill="rgba(255,255,255,0.5)" font-family="system-ui, -apple-system, sans-serif" font-size="20">
+    <circle cx="95" cy="500" r="6" fill="#22c55e"/>
+    <text x="115" y="507">VFS, TLS, Embassy portals</text>
+
+    <circle cx="395" cy="500" r="6" fill="#22c55e"/>
+    <text x="415" y="507">Passport extraction</text>
+
+    <circle cx="635" cy="500" r="6" fill="#22c55e"/>
+    <text x="655" y="507">Cover letter generation</text>
+  </g>
+
+  <!-- Chrome badge -->
+  <rect x="950" y="500" width="170" height="50" rx="25" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="990" y="533" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="white">Chrome Extension</text>
+
+  <!-- Document illustration -->
+  <g transform="translate(950, 150)">
+    <rect width="160" height="200" rx="12" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+    <rect x="20" y="30" width="80" height="8" rx="4" fill="rgba(245,158,11,0.5)"/>
+    <rect x="20" y="50" width="120" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+    <rect x="20" y="66" width="100" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+    <rect x="20" y="82" width="110" height="6" rx="3" fill="rgba(255,255,255,0.1)"/>
+    <rect x="20" y="110" width="80" height="8" rx="4" fill="rgba(245,158,11,0.5)"/>
+    <rect x="20" y="130" width="120" height="6" rx="3" fill="rgba(255,255,255,0.2)"/>
+    <rect x="20" y="146" width="90" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+    <!-- Checkmark -->
+    <circle cx="130" cy="170" r="20" fill="#22c55e"/>
+    <polyline points="120,170 127,177 142,162" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>
