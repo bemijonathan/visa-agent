@@ -9,6 +9,7 @@ import NewClient from './pages/NewClient'
 import ClientDetail from './pages/ClientDetail'
 import HomePage from './pages/HomePage'
 import PrivacyPage from './pages/PrivacyPage'
+import TermsPage from './pages/TermsPage'
 import OrgSettings from './pages/OrgSettings'
 import NewOrganization from './pages/NewOrganization'
 import LetterEditor from './pages/LetterEditor'
@@ -192,7 +193,9 @@ function LoginPage() {
 
         {/* Footer text */}
         <p className="text-center text-white/30 text-xs mt-6">
-          By signing in, you agree to our Terms of Service and{' '}
+          By signing in, you agree to our{' '}
+          <Link to="/terms" className="text-white/50 hover:text-white underline">Terms of Service</Link>
+          {' '}and{' '}
           <Link to="/privacy" className="text-white/50 hover:text-white underline">Privacy Policy</Link>
         </p>
       </div>
@@ -231,6 +234,9 @@ export default function App() {
 
       {/* Privacy policy (public) */}
       <Route path="/privacy" element={<PrivacyPage />} />
+
+      {/* Terms of service (public) */}
+      <Route path="/terms" element={<TermsPage />} />
 
       {/* Protected routes */}
       <Route path="/app" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />

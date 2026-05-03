@@ -589,7 +589,7 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-6 text-sm text-white/40">
             <Link to="/privacy" className="hover:text-white">Privacy</Link>
-            <a href="#" className="hover:text-white">Terms</a>
+            <Link to="/terms" className="hover:text-white">Terms</Link>
             <a href="mailto:hello@visaagent.app" className="hover:text-white">Contact</a>
           </div>
           <p className="text-sm text-white/30">© {new Date().getFullYear()} Visa Agent</p>
