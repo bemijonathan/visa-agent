@@ -1,34 +1,44 @@
 # Visa Agent
 
-An AI-powered visa application assistant delivered as a Chrome extension + web dashboard. It helps users manage profiles, process documents, auto-fill visa forms, and generate support letters — all powered by Google Gemini AI.
+An AI-powered visa application platform for immigration consultants and visa specialists. Manage client profiles, process documents, auto-fill visa forms, and generate support letters — all powered by Google Gemini AI.
+
+## Who It's For
+
+**Immigration consultants, visa agencies, and travel specialists** who process multiple visa applications. Visa Agent streamlines your workflow:
+
+- Store client profiles with passport details, employment info, and travel history
+- Upload and extract data from passports, bank statements, and bookings
+- Fill any visa portal form (VFS, TLS, embassy sites) with one click
+- Generate professional cover letters and support documents
 
 ## Features
 
-- **Profile management** — store personal, passport, employment, and travel info for yourself and family members
-- **Document processing** — upload passports, bank statements, and booking confirmations; text is extracted via OCR and used to answer form fields
-- **Form auto-fill** — detect and fill visa application form fields on any webpage with one click
-- **Letter generation** — generate custom cover letters, invitation letters, and employer support letters with free-text instructions; download as PDF
-- **Dashboard** — manage profiles and documents from a web UI
+- **Multi-tenant organizations** — create workspaces for your team, invite members, and share client profiles
+- **Profile management** — store personal, passport, employment, and travel info for each client
+- **Document processing** — upload passports, bank statements, and booking confirmations; text is extracted via OCR
+- **Form auto-fill** — Chrome extension detects and fills visa application forms on any webpage
+- **Letter generation** — generate custom cover letters, invitation letters, and employer support letters; download as PDF
+- **Privacy-first** — no data retention beyond what you store, encrypted in transit, never sold
 
 ## Architecture
 
 ```
 visa-agent/
-├── backend/    # Hono API server (Bun runtime)
+├── backend/    # Hono API server (Node.js + tsx)
 ├── dashboard/  # React web app (profile + document management)
 ├── extension/  # Chrome Extension MV3 (sidepanel, content script)
 └── dev.sh      # One-command dev startup script
 ```
 
-**Backend:** Hono · Prisma + PostgreSQL · Google Gemini 2.5 Pro · Cloudinary · Clerk · pdfkit
+**Backend:** Hono · Prisma + PostgreSQL · Google Gemini 2.5 Pro · Cloudinary · Firebase Admin · pdfkit
 
-**Frontend:** React 18 · TypeScript · Vite · Tailwind CSS · Clerk
+**Frontend:** React 18 · TypeScript · Vite · Tailwind CSS · Firebase Auth
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) (runtime + package manager — replaces Node/npm)
+- [Bun](https://bun.sh) (package manager for local dev)
 - [Docker Desktop](https://docker.com) (for PostgreSQL)
-- API keys: [Clerk](https://clerk.com), [Google AI](https://aistudio.google.com), [Cloudinary](https://cloudinary.com)
+- API keys: [Firebase](https://console.firebase.google.com), [Google AI](https://aistudio.google.com), [Cloudinary](https://cloudinary.com)
 
 ## Quick Start
 
@@ -47,14 +57,13 @@ cp dashboard/.env.example dashboard/.env
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
-| `CLERK_SECRET_KEY` | Clerk backend secret key |
-| `CLERK_WEBHOOK_SECRET` | Clerk webhook signing secret |
+| `FIREBASE_SERVICE_ACCOUNT` | Firebase Admin SDK service account JSON (stringified) |
 | `GOOGLE_AI_API_KEY` | Google AI (Gemini) API key |
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
 | `DASHBOARD_URL` | Dashboard origin for CORS (default: `http://localhost:5173`) |
-| `CHROME_EXTENSION_ID` | Your extension ID from `chrome://extensions` (leave blank in dev) |
+| `CHROME_EXTENSION_ID` | Your extension ID from `chrome://extensions` |
 
 **`extension/.env`**
 
@@ -62,14 +71,18 @@ cp dashboard/.env.example dashboard/.env
 |----------|-------------|
 | `VITE_API_URL` | Backend URL (default: `http://localhost:3001`) |
 | `VITE_DASHBOARD_URL` | Dashboard URL (default: `http://localhost:5173`) |
-| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key (leave blank for dev bypass) |
+| `VITE_FIREBASE_API_KEY` | Firebase Web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
 
 **`dashboard/.env`**
 
 | Variable | Description |
 |----------|-------------|
 | `VITE_API_URL` | Backend URL (default: `http://localhost:3001`) |
-| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+| `VITE_FIREBASE_API_KEY` | Firebase Web API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
 
 ### 3. Start everything
 
@@ -141,22 +154,43 @@ bun run build  # Production build
 | Method | Path | Description |
 |--------|------|-------------|
 | `GET` | `/health` | Health check |
+| `GET` | `/api/organizations` | List user's organizations |
+| `POST` | `/api/organizations` | Create organization |
+| `POST` | `/api/organizations/:id/invite` | Invite member by email |
+| `GET/POST` | `/api/profiles` | Profile CRUD (org-scoped) |
+| `GET/POST` | `/api/documents` | Document upload and management (org-scoped) |
 | `POST` | `/api/agent/chat` | Streaming chat via SSE |
 | `POST` | `/api/agent/fill-form` | Fill form fields using profile + documents |
 | `POST` | `/api/agent/generate-letter` | Generate a visa letter |
-| `GET/POST` | `/api/profiles` | Profile CRUD |
-| `GET/POST` | `/api/documents` | Document upload and management |
 | `GET` | `/api/letters/:id/pdf` | Download a generated letter as PDF |
-| `POST` | `/api/webhooks` | Clerk webhook handler (user sync) |
 
-## Dev Mode (no Clerk)
+All org-scoped endpoints require the `X-Organization-ID` header.
 
-When `VITE_CLERK_PUBLISHABLE_KEY` is not set (or is a placeholder) in `extension/.env`, the extension runs in **dev mode**: it skips authentication and sends a `dev-token` to the backend. The backend accepts this token when `NODE_ENV !== production` and `CLERK_SECRET_KEY` is not configured.
+## Deployment
 
-This lets you develop the full extension flow without setting up Clerk.
+### Railway (Backend + Dashboard)
 
-## Deployment Notes
+The project includes Railway configuration for monorepo deployment:
 
-- Set `NODE_ENV=production` in backend to enforce real Clerk auth (dev-token bypass is disabled)
-- Set `DASHBOARD_URL` and `CHROME_EXTENSION_ID` in backend for strict CORS
-- The extension must be rebuilt and reloaded after any source change in production
+1. Create a new Railway project
+2. Connect your GitHub repository
+3. Add a PostgreSQL database service
+4. Set environment variables in Railway dashboard
+5. Deploy
+
+The backend runs on Node.js + tsx (not Bun) in production for Prisma compatibility.
+
+### Chrome Web Store (Extension)
+
+1. Build the extension: `cd extension && bun run build`
+2. Zip the `dist` folder
+3. Upload to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+4. Fill in store listing details and submit for review
+
+## Privacy
+
+- All data encrypted in transit (HTTPS/TLS)
+- No data retention beyond what you explicitly store
+- Your data is never sold or shared with third parties
+- Documents stored securely on Cloudinary with access controls
+- See `/privacy-policy.html` for full privacy policy
