@@ -588,7 +588,7 @@ export default function HomePage() {
             <span className="font-semibold">Visa Agent</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-white/40">
-            <a href="/public/privacy-policy.html" className="hover:text-white">Privacy</a>
+            <Link to="/privacy" className="hover:text-white">Privacy</Link>
             <a href="#" className="hover:text-white">Terms</a>
             <a href="mailto:hello@visaagent.app" className="hover:text-white">Contact</a>
           </div>
