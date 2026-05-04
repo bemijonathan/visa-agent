@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, FileText, AlertTriangle, Scale, CreditCard, Ban, RefreshCw, Mail } from 'lucide-react'
+import { ArrowLeft, FileText, AlertTriangle, Scale, Ban, RefreshCw, Mail } from 'lucide-react'
 
 export default function TermsPage() {
   return (

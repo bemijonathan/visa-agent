@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Users, FileText, Upload, PenTool, ArrowRight, Globe, Zap, ChevronDown, Check, FileUp, Scan, MousePointer, Download, ArrowDown } from 'lucide-react'
+import { Users, ArrowRight, Globe, Zap, ChevronDown, Check, FileUp, Scan, Download, ArrowDown } from 'lucide-react'
 
 export default function HomePage() {
   return (

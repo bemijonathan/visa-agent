@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, Mail, MessageSquare, Clock, MapPin, Send } from 'lucide-react'
+import { ArrowLeft, Mail, MessageSquare, Clock, Send } from 'lucide-react'
 import { useState } from 'react'
 
 export default function ContactPage() {
