@@ -1,5 +1,13 @@
 // Content script for form detection and filling
 
+// Signal extension presence to web pages (for dashboard detection)
+document.body.dataset.visaAgentExtension = 'true'
+
+// Respond to extension detection pings from dashboard
+window.addEventListener('visa-agent-extension-ping', () => {
+  window.dispatchEvent(new CustomEvent('visa-agent-extension-pong'))
+})
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'GET_FORM_FIELDS') {
     try {

@@ -7,10 +7,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Building2,
-  User
+  User,
+  X,
+  Download
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useOrganization } from '../contexts/OrganizationContext'
+import { useExtensionDetection } from '../hooks/useExtensionDetection'
 import OrgSwitcher from './OrgSwitcher'
 
 interface DashboardLayoutProps {
@@ -21,6 +24,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
   const { currentOrganization } = useOrganization()
+  const { showBanner, dismissBanner } = useExtensionDetection()
   const [collapsed, setCollapsed] = useState(false)
 
   async function handleSignOut() {
@@ -139,6 +143,37 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <main className={`flex-1 transition-all duration-300 ${collapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Extension Banner */}
+        {showBanner && (
+          <div className="bg-red-600 text-white px-4 py-3 relative z-30">
+            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Download className="w-5 h-5 shrink-0" />
+                <p className="text-sm font-medium">
+                  <span className="font-semibold">Chrome Extension not detected.</span>
+                  {' '}Install the Visa Agent extension to auto-fill forms on visa portals.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <a
+                  href="https://chrome.google.com/webstore"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-1.5 bg-white text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  Install Extension
+                </a>
+                <button
+                  onClick={dismissBanner}
+                  className="p-1 hover:bg-red-700 rounded transition-colors"
+                  aria-label="Dismiss"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {children}
       </main>
     </div>
