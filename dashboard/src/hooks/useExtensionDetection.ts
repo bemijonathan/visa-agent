@@ -7,7 +7,8 @@ export function useExtensionDetection() {
   const [isInstalled, setIsInstalled] = useState<boolean | null>(null)
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     if (typeof window === 'undefined') return false
-    return localStorage.getItem(BANNER_DISMISSED_KEY) === 'true'
+    // Use sessionStorage so dismissal only lasts for current session
+    return sessionStorage.getItem(BANNER_DISMISSED_KEY) === 'true'
   })
 
   useEffect(() => {
@@ -48,12 +49,12 @@ export function useExtensionDetection() {
 
   const dismissBanner = () => {
     setBannerDismissed(true)
-    localStorage.setItem(BANNER_DISMISSED_KEY, 'true')
+    sessionStorage.setItem(BANNER_DISMISSED_KEY, 'true')
   }
 
   const resetBannerDismissal = () => {
     setBannerDismissed(false)
-    localStorage.removeItem(BANNER_DISMISSED_KEY)
+    sessionStorage.removeItem(BANNER_DISMISSED_KEY)
   }
 
   return {
