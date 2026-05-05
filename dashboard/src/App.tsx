@@ -11,6 +11,7 @@ import HomePage from './pages/HomePage'
 import PrivacyPage from './pages/PrivacyPage'
 import TermsPage from './pages/TermsPage'
 import ContactPage from './pages/ContactPage'
+import AcceptInvite from './pages/AcceptInvite'
 import OrgSettings from './pages/OrgSettings'
 import NewOrganization from './pages/NewOrganization'
 import LetterEditor from './pages/LetterEditor'
@@ -241,6 +242,9 @@ export default function App() {
 
       {/* Contact page (public) */}
       <Route path="/contact" element={<ContactPage />} />
+
+      {/* Accept invitation (public, handles auth internally) */}
+      <Route path="/invite/:token" element={<AcceptInvite />} />
 
       {/* Protected routes */}
       <Route path="/app" element={<ProtectedRoute><ClientList /></ProtectedRoute>} />

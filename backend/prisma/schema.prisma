@@ -17,19 +17,21 @@ model User {
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
   activities        Activity[]
+  invitationsSent   Invitation[]
   uploadedDocuments Document[]
   memberships       OrganizationMember[]
 }
 
 model Organization {
-  id        String               @id @default(cuid())
-  name      String
-  slug      String               @unique
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
-  documents Document[]
-  members   OrganizationMember[]
-  profiles  Profile[]
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  documents   Document[]
+  invitations Invitation[]
+  members     OrganizationMember[]
+  profiles    Profile[]
 }
 
 model OrganizationMember {
@@ -43,6 +45,24 @@ model OrganizationMember {
 
   @@unique([userId, organizationId])
   @@index([organizationId])
+}
+
+model Invitation {
+  id             String           @id @default(cuid())
+  email          String
+  organizationId String
+  role           MemberRole       @default(MEMBER)
+  token          String           @unique
+  status         InvitationStatus @default(PENDING)
+  invitedById    String
+  expiresAt      DateTime
+  createdAt      DateTime         @default(now())
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy      User             @relation(fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@unique([email, organizationId])
+  @@index([organizationId])
+  @@index([token])
 }
 
 model Profile {
@@ -130,4 +150,11 @@ enum LetterStatus {
   DRAFT
   APPROVED
   REJECTED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
 }

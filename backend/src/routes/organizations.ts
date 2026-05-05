@@ -2,8 +2,10 @@ import { Hono } from 'hono'
 import { prisma } from '../lib/prisma.js'
 import { authMiddleware, getFirebaseUid, getUserEmail, getUserName, getUserPicture } from '../middleware/auth.js'
 import { getOrCreateUser, organizationMiddleware, getUserId, getOrganizationId, getOrganizationRole, requireAdmin, requireOwner } from '../middleware/organization.js'
-import { MemberRole } from '@prisma/client'
+import { MemberRole, InvitationStatus } from '@prisma/client'
 import { z } from 'zod'
+import { randomBytes } from 'crypto'
+import { sendInviteEmail } from '../lib/email.js'
 
 export const organizationRoutes = new Hono()
 
@@ -217,6 +219,7 @@ orgScopedRoutes.delete('/', requireOwner, async (c) => {
 // Invite member (admin/owner only)
 orgScopedRoutes.post('/invite', requireAdmin, async (c) => {
   const orgId = getOrganizationId(c)
+  const userId = getUserId(c)
 
   const body = await c.req.json().catch(() => ({}))
   const parsed = InviteSchema.safeParse(body)
@@ -225,57 +228,99 @@ orgScopedRoutes.post('/invite', requireAdmin, async (c) => {
     return c.json({ error: parsed.error.errors.map(e => e.message).join(', ') }, 400)
   }
 
-  // Find or create user by email
-  let user = await prisma.user.findUnique({
-    where: { email: parsed.data.email },
+  const email = parsed.data.email.toLowerCase()
+  const role = parsed.data.role === 'ADMIN' ? MemberRole.ADMIN : MemberRole.MEMBER
+
+  // Check if user is already a member
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
+    include: {
+      memberships: {
+        where: { organizationId: orgId },
+      },
+    },
   })
 
-  if (!user) {
-    // Create a placeholder user - they'll get linked to their Firebase account on first sign in
-    user = await prisma.user.create({
-      data: {
-        firebaseUid: `pending-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        email: parsed.data.email,
-      },
-    })
+  if (existingUser?.memberships.length) {
+    return c.json({ error: 'User is already a member of this organization' }, 400)
   }
 
-  // Check if already a member
-  const existingMember = await prisma.organizationMember.findUnique({
+  // Check for existing pending invitation
+  const existingInvite = await prisma.invitation.findUnique({
     where: {
-      userId_organizationId: {
-        userId: user.id,
+      email_organizationId: {
+        email,
         organizationId: orgId,
       },
     },
   })
 
-  if (existingMember) {
-    return c.json({ error: 'User is already a member of this organization' }, 400)
+  if (existingInvite?.status === InvitationStatus.PENDING) {
+    return c.json({ error: 'An invitation has already been sent to this email' }, 400)
   }
 
-  const role = parsed.data.role === 'ADMIN' ? MemberRole.ADMIN : MemberRole.MEMBER
+  // Get organization and inviter details for email
+  const [organization, inviter] = await Promise.all([
+    prisma.organization.findUnique({ where: { id: orgId } }),
+    prisma.user.findUnique({ where: { id: userId } }),
+  ])
 
-  const member = await prisma.organizationMember.create({
-    data: {
-      userId: user.id,
+  if (!organization || !inviter) {
+    return c.json({ error: 'Organization or user not found' }, 404)
+  }
+
+  // Generate unique token
+  const token = randomBytes(32).toString('hex')
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+
+  // Create or update invitation
+  const invitation = await prisma.invitation.upsert({
+    where: {
+      email_organizationId: {
+        email,
+        organizationId: orgId,
+      },
+    },
+    create: {
+      email,
       organizationId: orgId,
       role,
+      token,
+      expiresAt,
+      invitedById: userId,
     },
-    include: {
-      user: {
-        select: { id: true, email: true, displayName: true, photoURL: true },
-      },
+    update: {
+      role,
+      token,
+      status: InvitationStatus.PENDING,
+      expiresAt,
+      invitedById: userId,
     },
   })
 
+  // Send invitation email
+  try {
+    await sendInviteEmail({
+      to: email,
+      inviterName: inviter.displayName || inviter.email,
+      organizationName: organization.name,
+      token,
+      role: role === MemberRole.ADMIN ? 'Admin' : 'Member',
+    })
+  } catch (error: any) {
+    // Delete the invitation if email fails
+    await prisma.invitation.delete({ where: { id: invitation.id } })
+    console.error('Email send error:', error)
+    return c.json({ error: 'Failed to send invitation email. Please try again.' }, 500)
+  }
+
   return c.json({
-    id: member.id,
-    userId: member.user.id,
-    email: member.user.email,
-    displayName: member.user.displayName,
-    role: member.role,
-    createdAt: member.createdAt,
+    id: invitation.id,
+    email: invitation.email,
+    role: invitation.role,
+    status: invitation.status,
+    expiresAt: invitation.expiresAt,
+    createdAt: invitation.createdAt,
   }, 201)
 })
 
@@ -389,5 +434,169 @@ orgScopedRoutes.post('/leave', async (c) => {
   return c.json({ success: true })
 })
 
+// List pending invitations (admin/owner only)
+orgScopedRoutes.get('/invitations', requireAdmin, async (c) => {
+  const orgId = getOrganizationId(c)
+
+  const invitations = await prisma.invitation.findMany({
+    where: {
+      organizationId: orgId,
+      status: InvitationStatus.PENDING,
+    },
+    include: {
+      invitedBy: {
+        select: { displayName: true, email: true },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return c.json(invitations.map(inv => ({
+    id: inv.id,
+    email: inv.email,
+    role: inv.role,
+    status: inv.status,
+    invitedBy: inv.invitedBy.displayName || inv.invitedBy.email,
+    expiresAt: inv.expiresAt,
+    createdAt: inv.createdAt,
+  })))
+})
+
+// Cancel invitation (admin/owner only)
+orgScopedRoutes.delete('/invitations/:invitationId', requireAdmin, async (c) => {
+  const orgId = getOrganizationId(c)
+  const invitationId = c.req.param('invitationId')
+
+  const invitation = await prisma.invitation.findFirst({
+    where: { id: invitationId, organizationId: orgId },
+  })
+
+  if (!invitation) {
+    return c.json({ error: 'Invitation not found' }, 404)
+  }
+
+  await prisma.invitation.update({
+    where: { id: invitationId },
+    data: { status: InvitationStatus.CANCELLED },
+  })
+
+  return c.json({ success: true })
+})
+
 // Mount org-scoped routes under /:id
 organizationRoutes.route('/:id', orgScopedRoutes)
+
+// Accept invitation (no org context needed, uses token)
+organizationRoutes.post('/invitations/:token/accept', async (c) => {
+  const firebaseUid = getFirebaseUid(c)
+  const email = getUserEmail(c)
+  const displayName = getUserName(c)
+  const photoURL = getUserPicture(c)
+  const token = c.req.param('token')
+
+  // Find the invitation
+  const invitation = await prisma.invitation.findUnique({
+    where: { token },
+    include: { organization: true },
+  })
+
+  if (!invitation) {
+    return c.json({ error: 'Invitation not found' }, 404)
+  }
+
+  if (invitation.status !== InvitationStatus.PENDING) {
+    return c.json({ error: `Invitation has already been ${invitation.status.toLowerCase()}` }, 400)
+  }
+
+  if (new Date() > invitation.expiresAt) {
+    await prisma.invitation.update({
+      where: { id: invitation.id },
+      data: { status: InvitationStatus.EXPIRED },
+    })
+    return c.json({ error: 'Invitation has expired' }, 400)
+  }
+
+  // Email must match (case insensitive)
+  if (email.toLowerCase() !== invitation.email.toLowerCase()) {
+    return c.json({
+      error: `This invitation was sent to ${invitation.email}. Please sign in with that email address.`
+    }, 403)
+  }
+
+  // Get or create user
+  const user = await getOrCreateUser(firebaseUid, email, displayName, photoURL)
+
+  // Check if already a member
+  const existingMember = await prisma.organizationMember.findUnique({
+    where: {
+      userId_organizationId: {
+        userId: user.id,
+        organizationId: invitation.organizationId,
+      },
+    },
+  })
+
+  if (existingMember) {
+    // Mark invitation as accepted anyway
+    await prisma.invitation.update({
+      where: { id: invitation.id },
+      data: { status: InvitationStatus.ACCEPTED },
+    })
+    return c.json({
+      message: 'You are already a member of this organization',
+      organizationId: invitation.organizationId,
+      organizationName: invitation.organization.name,
+    })
+  }
+
+  // Add user as member and mark invitation as accepted
+  await prisma.$transaction([
+    prisma.organizationMember.create({
+      data: {
+        userId: user.id,
+        organizationId: invitation.organizationId,
+        role: invitation.role,
+      },
+    }),
+    prisma.invitation.update({
+      where: { id: invitation.id },
+      data: { status: InvitationStatus.ACCEPTED },
+    }),
+  ])
+
+  return c.json({
+    message: 'Invitation accepted',
+    organizationId: invitation.organizationId,
+    organizationName: invitation.organization.name,
+    role: invitation.role,
+  })
+})
+
+// Get invitation details (public, for showing invite page)
+organizationRoutes.get('/invitations/:token', async (c) => {
+  const token = c.req.param('token')
+
+  const invitation = await prisma.invitation.findUnique({
+    where: { token },
+    include: {
+      organization: { select: { name: true, slug: true } },
+      invitedBy: { select: { displayName: true } },
+    },
+  })
+
+  if (!invitation) {
+    return c.json({ error: 'Invitation not found' }, 404)
+  }
+
+  const isExpired = new Date() > invitation.expiresAt
+
+  return c.json({
+    email: invitation.email,
+    organizationName: invitation.organization.name,
+    organizationSlug: invitation.organization.slug,
+    invitedBy: invitation.invitedBy.displayName || 'A team member',
+    role: invitation.role,
+    status: isExpired ? 'EXPIRED' : invitation.status,
+    expiresAt: invitation.expiresAt,
+  })
+})
