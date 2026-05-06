@@ -156,7 +156,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
               <div className="flex items-center gap-3 shrink-0">
                 <a
-                  href="https://chrome.google.com/webstore"
+                  href="https://chromewebstore.google.com/detail/visa-agent/hpgdkiiefpkefcmcikdoanjlhajkaahc"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-4 py-1.5 bg-white text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 transition-colors"

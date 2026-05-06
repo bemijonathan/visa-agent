@@ -560,7 +560,7 @@ export default function HomePage() {
               <ArrowRight className="w-5 h-5" />
             </Link>
             <a
-              href="https://chrome.google.com/webstore"
+              href="https://chromewebstore.google.com/detail/visa-agent/hpgdkiiefpkefcmcikdoanjlhajkaahc"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white/5 border border-white/10 text-white text-base font-medium rounded-xl hover:bg-white/10 transition-all"
