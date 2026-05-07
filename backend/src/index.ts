@@ -24,6 +24,7 @@ app.use('*', cors({
     if (ALLOWED_EXTENSION_ID && origin === `chrome-extension://${ALLOWED_EXTENSION_ID}`) return origin
     if (!ALLOWED_EXTENSION_ID && origin.startsWith('chrome-extension://')) return origin // dev fallback
     if (origin === DASHBOARD_URL) return origin
+    if (origin === 'https://visa-agent.zeffron.ai') return origin
     return null
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

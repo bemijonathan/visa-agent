@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://visa-agent-production.up.railway.app/sitemap.xml
+Sitemap: https://visa-agent.zeffron.ai/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 1
