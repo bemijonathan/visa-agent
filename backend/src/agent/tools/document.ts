@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma.js'
-import { extractTextFromImage } from '../../lib/gemini.js'
+import { extractTextFromImage } from '../../lib/groq.js'
 
 // Tool definitions for Claude
 export const documentTools = [
@@ -121,7 +121,7 @@ export async function executeDocumentTool(
       }
 
       try {
-        // Extract text using Gemini Vision
+        // Extract text using Groq Llama Vision
         const extractedText = await extractTextFromImage(document.fileUrl)
 
         // Update document with extracted text
@@ -164,7 +164,7 @@ export async function executeDocumentTool(
           })
         }
 
-        // Return each document as a result chunk — Gemini's 2M context handles full docs
+        // Return each document as a result chunk
         const results = documents.map(d => ({
           text: d.extractedText,
           documentName: d.name,

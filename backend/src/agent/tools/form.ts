@@ -1,5 +1,4 @@
 import { prisma } from '../../lib/prisma.js'
-import { geminiModel } from '../../lib/gemini.js'
 import { groqComplete } from '../../lib/groq.js'
 
 // Tool definitions for Claude
@@ -60,9 +59,7 @@ export async function executeFormTool(
   switch (toolName) {
     case 'detect_form_fields': {
       try {
-        const result = await geminiModel.generateContent([
-          {
-            text: `Analyze this HTML and extract all form fields. For each field, identify:
+        const text = await groqComplete(`Analyze this HTML and extract all form fields. For each field, identify:
 - name: the field's name attribute, id, or a descriptive identifier
 - label: the associated label text or placeholder
 - type: input type (text, email, date, select, checkbox, radio, textarea, etc.)
@@ -72,11 +69,7 @@ export async function executeFormTool(
 Return ONLY a JSON array of field objects, no other text.
 
 HTML:
-${input.html}`,
-          },
-        ])
-
-        const text = result.response.text()
+${input.html}`)
 
         // Extract JSON from response
         const jsonMatch = text.match(/\[[\s\S]*\]/)
@@ -109,7 +102,7 @@ ${input.html}`,
         }
 
         // Fetch the full extracted text for the profile's documents.
-        // Gemini 2.5 Pro has a massive 2M token context window, easily handling full documents.
+        // Fetch all documents for the profile to include in context
         const documents = await prisma.document.findMany({
           where: { profileId: input.profile_id, organizationId, extractedText: { not: null } },
           select: { name: true, type: true, extractedText: true }
