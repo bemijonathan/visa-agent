@@ -10,14 +10,45 @@ const IS_DEV_MODE =
   (!process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT === '{}')
 
 export async function getOrCreateUser(firebaseUid: string, email?: string | null, displayName?: string | null, photoURL?: string | null) {
-  return prisma.user.upsert({
+  // First, check if a user exists with this firebaseUid
+  const existingByUid = await prisma.user.findUnique({
     where: { firebaseUid },
-    update: {
-      ...(email && { email }),
-      ...(displayName && { displayName }),
-      ...(photoURL && { photoURL }),
-    },
-    create: {
+  })
+
+  if (existingByUid) {
+    // Update existing user
+    return prisma.user.update({
+      where: { firebaseUid },
+      data: {
+        ...(email && { email }),
+        ...(displayName && { displayName }),
+        ...(photoURL && { photoURL }),
+      },
+    })
+  }
+
+  // Check if a user exists with this email (e.g., from invitation)
+  if (email) {
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email },
+    })
+
+    if (existingByEmail) {
+      // Link this Firebase account to the existing user
+      return prisma.user.update({
+        where: { email },
+        data: {
+          firebaseUid,
+          displayName: displayName || existingByEmail.displayName,
+          photoURL: photoURL || existingByEmail.photoURL,
+        },
+      })
+    }
+  }
+
+  // Create new user
+  return prisma.user.create({
+    data: {
       firebaseUid,
       email: email || `${firebaseUid}@placeholder.com`,
       displayName,
