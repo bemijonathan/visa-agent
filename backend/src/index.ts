@@ -125,9 +125,10 @@ app.route('/api/organizations', organizationRoutes)
 // Static files
 app.use('/public/*', serveStatic({ root: './' }))
 
-// Dashboard SPA — serve static assets then fall back to index.html for client-side routing
-app.use('/dashboard/*', serveStatic({ root: './public/dashboard', rewriteRequestPath: (path) => path.replace(/^\/dashboard/, '') }))
-app.get('/dashboard/*', serveStatic({ path: './public/dashboard/index.html' }))
+// Dashboard SPA at root — serve static assets, fallback to index.html for client-side routing
+app.use('/assets/*', serveStatic({ root: './public/dashboard' }))
+app.get('*', serveStatic({ root: './public/dashboard' }))
+app.get('*', serveStatic({ path: './public/dashboard/index.html' }))
 
 // Error handler
 app.onError((err, c) => {
