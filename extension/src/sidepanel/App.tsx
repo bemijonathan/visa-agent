@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { User } from 'firebase/auth'
+import type { User } from 'firebase/auth'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 

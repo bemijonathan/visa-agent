@@ -2,20 +2,16 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User } from 'firebase/auth'
 import {
   initFirebase,
-  signInWithGoogle as firebaseSignInWithGoogle,
   signInWithEmail as firebaseSignInWithEmail,
   createAccount as firebaseCreateAccount,
   signOut as firebaseSignOut,
   subscribeToAuthState,
   getIdToken,
-  isUsingEmulator,
 } from '../lib/firebase'
 
 interface AuthContextType {
   user: User | null
   loading: boolean
-  isEmulatorMode: boolean
-  signInWithGoogle: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   createAccount: (email: string, password: string) => Promise<void>
   signOut: () => Promise<void>
@@ -49,12 +45,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return unsubscribe
   }, [])
 
-  const isEmulatorMode = isUsingEmulator()
-
-  const signInWithGoogle = async () => {
-    await firebaseSignInWithGoogle()
-  }
-
   const signInWithEmail = async (email: string, password: string) => {
     await firebaseSignInWithEmail(email, password)
   }
@@ -72,7 +62,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, isEmulatorMode, signInWithGoogle, signInWithEmail, createAccount, signOut, getToken }}>
+    <AuthContext.Provider value={{ user, loading, signInWithEmail, createAccount, signOut, getToken }}>
       {children}
     </AuthContext.Provider>
   )

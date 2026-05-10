@@ -1,8 +1,6 @@
 import { initializeApp, FirebaseApp } from 'firebase/app'
 import {
   getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -46,14 +44,6 @@ export function getFirebaseAuth(): Auth {
   return auth
 }
 
-export async function signInWithGoogle(): Promise<User> {
-  const auth = getFirebaseAuth()
-  const provider = new GoogleAuthProvider()
-  const result = await signInWithPopup(auth, provider)
-  return result.user
-}
-
-// For emulator testing - sign in with email/password
 export async function signInWithEmail(email: string, password: string): Promise<User> {
   const auth = getFirebaseAuth()
   const result = await signInWithEmailAndPassword(auth, email, password)

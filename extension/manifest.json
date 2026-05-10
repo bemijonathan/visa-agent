@@ -1,13 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Visa Agent",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "AI-powered visa form filling and letter generation assistant",
   "permissions": [
     "activeTab",
-    "storage",
-    "scripting",
-    "identity"
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"
