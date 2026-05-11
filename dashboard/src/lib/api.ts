@@ -1,6 +1,6 @@
 import { getIdToken } from './firebase'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
 
 let _currentOrgId: string | null = null
 

@@ -11,7 +11,7 @@ interface ProfileSelectorProps {
   getToken: () => Promise<string | null>
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3001').replace(/\/$/, '')
 
 export default function ProfileSelector({
   selectedProfileId,
