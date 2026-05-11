@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk'
 import { extractText } from 'unpdf'
+import { extractTextFromImage as extractWithGemini } from './gemini.js'
 
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY || '',
@@ -112,8 +113,9 @@ export async function extractTextFromImage(fileUrl: string): Promise<string> {
       return pdfText
     }
 
-    // PDF is scanned - cannot process without page-to-image conversion
-    throw new Error('This PDF appears to be a scanned document without a text layer. Please upload images of the individual pages instead.')
+    // PDF is scanned - use Gemini which supports native PDF processing
+    console.log('[groq] PDF has no text layer, falling back to Gemini for OCR')
+    return await extractWithGemini(fileUrl)
   }
 
   // Handle images with vision API
