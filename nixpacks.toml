@@ -15,4 +15,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd backend && npx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && npx tsx src/index.ts"
+cmd = "cd backend && bunx prisma db push --skip-generate --accept-data-loss || echo 'DB push skipped' && bunx tsx src/index.ts"
